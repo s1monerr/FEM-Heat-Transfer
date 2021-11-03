@@ -97,7 +97,7 @@ class grid{
             for(int j = 0; j < nH - 1; j++){
                 std::cout<<"Element "<<c++<<" : ";
                 std::cout<<"id1 = "<<elements[i][j].id[0]<<", id2 = "<<elements[i][j].id[1]<<", id3 = "
-                <<elements[i][j].id[3]<<", id4 = "<<elements[i][j].id[3]<<std::endl;
+                <<elements[i][j].id[2]<<", id4 = "<<elements[i][j].id[3]<<std::endl;
             }
         }
     }
@@ -385,9 +385,10 @@ double determinant(double **matrix) { return matrix[0][0]*matrix[1][1] - matrix[
 // COUNT JACOBI MATRIX
 // node elmnt[4] - reprezentacja elementu z 4 wezlami w siatce
 // iter - iteracja -> iterowany punkt calkowania 
-void jacobi(int iter, /*int j,*/ double** J, double** J_inv, ELEMENT_2D_ARRAYS elmnt_4p, node elmnt[4]){
+// elm_number -> numer elementu
+void jacobi(/*int elm_number,*/ int iter, double** J, double** J_inv, ELEMENT_2D_ARRAYS elmnt_4p, node elmnt[4]){
     // count values in jacobi matrix - punkt calkowania pc[iter]
-    std::cout<<"=== COUNTING JACOBI MATRIX ; pc = "<<iter<<" ==="<<std::endl;
+    std::cout<<" ; pc = "<<iter<<std::endl;
 
     for(int i = 0; i < 4; i++){
         std::cout<<elmnt_4p.MATRIX_4P_DKSI[iter][i]<<"*"<<elmnt[i].x<<std::endl;
@@ -425,6 +426,56 @@ void jacobi(int iter, /*int j,*/ double** J, double** J_inv, ELEMENT_2D_ARRAYS e
     std::cout<<std::setprecision(5)<<"DETERMINANT: "<<determinant(J)<<std::endl;
     std::cout<<std::setprecision(5)<<"1/DETERMINANT: "<<1/determinant(J)<<std::endl;
     std::cout<<std::endl;
+}
+
+// COUNT JACOBI MATRIX FOR GRID
+// ELEMENT_1 - przechowuje macierze dN/dKsi oraz dN/dn
+void jacobi_grid(grid GRID, ELEMENT_2D_ARRAYS ELEMENT_1){
+    // tablica 1d wezlow w siatce
+    node *nodes = new node[GRID.nodes_number];
+    element *elements = new element[GRID.elm_number];
+    // przepisywanie wezlow do tablicy 1d
+    int counter = 0;
+    for(int i = 0; i < GRID.nW; i++){
+        for(int j = 0; j < GRID.nH; j++){
+            nodes[counter] = GRID.nodes[i][j];
+                std::cout<<"NODES ["<<counter<<"] : x = "<<nodes[counter].x<<" y = "<<nodes[counter].y<<std::endl;
+                counter++;
+        }
+    }
+    
+    // przepisywanie elementow do tablicy 1d
+    counter = 0;
+    for(int i = 0; i < GRID.nW-1; i++){
+        for(int j = 0; j < GRID.nH-1; j++){
+            elements[counter] = GRID.elements[i][j];
+                std::cout<<"ELEMENTS ["<<counter<<"] : id1 = "<<elements[counter].id[0]
+                <<" id2 = "<<elements[counter].id[1]<<" id3 = "<<elements[counter].id[2]<<
+                " id4 = "<<elements[counter].id[3]<<std::endl;
+                counter++;
+        }
+    }
+
+    // deklaracja macierzy do przechowania Jakobianu
+    double **jacobian = new double*[2];
+    for(int i = 0; i < 2; i++)
+        jacobian[i] = new double[2];
+    
+    // MAIN ALGHORITM
+    // oblicz Jakobian dla kazdego elementu -> elemnt ma id wezlow
+    for(int i = 0; i < GRID.elm_number; i++){
+        // dla kazdego elementu stworz temp_element z 4 wezlami tego elementu
+        node temp_element[4];
+        temp_element[0] = nodes[elements[i].id[0]];
+        temp_element[1] = nodes[elements[i].id[1]];
+        temp_element[2] = nodes[elements[i].id[2]];
+        temp_element[3] = nodes[elements[i].id[3]];
+        std::cout<<"=== COUNTING JACOBI MATRIX FOR ELEMENT "<<i<<" ==="<<std::endl;
+        // inner loop -> 4 punkty calkowania dla kazdego 
+        for(int j = 0; j < 4; j++){
+            jacobi(/*i,*/j, jacobian, jacobian, ELEMENT_1, temp_element);
+        }
+    }
 }
 
 int main(){
@@ -480,11 +531,13 @@ int main(){
     for(int i = 0; i < 2; i++)
         jacobian[i] = new double[2];
 
-    // grid grid_1 = grid(HEIGTH, WIDTH, NODES_HEIGTH, NODES_WIDTH);
-    // createNodes(grid_1);
-    // grid_1.printNodes();
-    // createElements(grid_1, NODES_HEIGTH);
-    // grid_1.printElements();
+    grid grid_1 = grid(HEIGTH, WIDTH, NODES_HEIGTH, NODES_WIDTH);
+    createNodes(grid_1);
+    grid_1.printNodes();
+    createElements(grid_1, NODES_HEIGTH);
+    grid_1.printElements();
+
+    jacobi_grid(grid_1, ELEMENT_1);
 
     // element_grid temp_element = element_grid(0, 0.025, 0.025, 0,
     //                                     0, 0, 0.025, 0.025);
@@ -508,20 +561,20 @@ int main(){
     //     }
     // }
 
-    node temp_element[4];
-    node n0 = node(0,0);
-    node n1 = node(0.025, 0);
-    node n2 = node(0.025, 0.025);
-    node n3 = node(0, 0.025);
+    // node temp_element[4];
+    // node n0 = node(0,0);
+    // node n1 = node(0.025, 0);
+    // node n2 = node(0.025, 0.025);
+    // node n3 = node(0, 0.025);
 
-    temp_element[0] = n0;
-    temp_element[1] = n1;
-    temp_element[2] = n2;
-    temp_element[3] = n3;
+    // temp_element[0] = n0;
+    // temp_element[1] = n1;
+    // temp_element[2] = n2;
+    // temp_element[3] = n3;
 
-    // count Jacobi example for 4 iterations (4 punkty calkowania)
-    for(int i = 0; i < 4; i++)
-        jacobi(i,jacobian, jacobian, ELEMENT_1, temp_element);
+    // // count Jacobi example for 4 iterations (4 punkty calkowania)
+    // for(int i = 0; i < 4; i++)
+    //     jacobi(i,0, jacobian, jacobian, ELEMENT_1, temp_element);
 
     // for(int i = 0; i < 2; i++){
     //     for(int j = 0; j < 2; j++){
