@@ -1,13 +1,15 @@
 // IMPLEMENTACJA SIATKI DO MES
 
-
+#include "grid.h"
 #include <iostream>
 #include <iomanip>
 
+#ifndef WIDTH
 #define WIDTH 0.1 // szerokosc
 #define HEIGTH 0.2 // wysokosc
 #define NODES_HEIGTH 5 // ilosc wezlow wysokosc
 #define NODES_WIDTH 4 // ilosc wezlow szerokosc
+#endif
 
 class node{
 
@@ -27,13 +29,14 @@ class node{
 class element{
 
     public:
-        int id1, id2, id3, id4; // id wezlow
+        //int id1, id2, id3, id4; // id wezlow
+        int id[4];
 
         element(int i1, int i2, int i3, int i4){
-            id1 = i1;
-            id2 = i2;
-            id3 = i3;
-            id4 = i4;
+            id[0] = i1;
+            id[1] = i2;
+            id[2] = i3;
+            id[3] = i4;
         }
 
         element(){
@@ -83,8 +86,8 @@ class grid{
         for(int i = 0; i < nW - 1; i++){
             for(int j = 0; j < nH - 1; j++){
                 std::cout<<"Element "<<c++<<" : ";
-                std::cout<<"id1 = "<<elements[i][j].id1<<", id2 = "<<elements[i][j].id2<<", id3 = "
-                <<elements[i][j].id3<<", id4 = "<<elements[i][j].id4<<std::endl;
+                std::cout<<"id1 = "<<elements[i][j].id[0]<<", id2 = "<<elements[i][j].id[1]<<", id3 = "
+                <<elements[i][j].id[3]<<", id4 = "<<elements[i][j].id[3]<<std::endl;
             }
         }
     }
@@ -129,23 +132,23 @@ void createElements(grid gr, int node_heigth){
     for(int i = 0; i < gr.nW - 1; i++){
         // INTERIOR LOOP - rows
         for(int j = 0; j < gr.nH - 1; j++){
-            gr.elements[i][j].id1 = j + w - node_heigth; // zawsze dodawaj w, ale mmiejsze o jedna wysokosc od id2
-            gr.elements[i][j].id2 = j + w;
+            gr.elements[i][j].id[0] = j + w - node_heigth; // zawsze dodawaj w, ale mmiejsze o jedna wysokosc od id2
+            gr.elements[i][j].id[1] = j + w;
             // kolejne id sa odpowiednio wieksze o 1
-            gr.elements[i][j].id3 = gr.elements[i][j].id2 + 1;
-            gr.elements[i][j].id4 = gr.elements[i][j].id1 + 1;
+            gr.elements[i][j].id[2] = gr.elements[i][j].id[1] + 1;
+            gr.elements[i][j].id[3] = gr.elements[i][j].id[0] + 1;
         }
         w += node_heigth; // w kolejnej kolumnie zwieksz o kolejna liczbe wezlow w kolumnie - czyli wysokosc wezlow
     }
 
 }
 
-int main(){
-    grid grid_1 = grid(HEIGTH, WIDTH, NODES_HEIGTH, NODES_WIDTH);
+// int main(){
+//     grid grid_1 = grid(HEIGTH, WIDTH, NODES_HEIGTH, NODES_WIDTH);
     
-    createNodes(grid_1);
-    grid_1.printNodes();
-    createElements(grid_1, NODES_HEIGTH);
-    grid_1.printElements();
+//     createNodes(grid_1);
+//     grid_1.printNodes();
+//     createElements(grid_1, NODES_HEIGTH);
+//     grid_1.printElements();
 
-}
+// }
