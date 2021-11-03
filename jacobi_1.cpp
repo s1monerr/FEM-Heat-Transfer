@@ -1,5 +1,6 @@
 // IMPLEMENTACJA JAKOBIANU - part 1 
-// schemat 2 i 3 punktowy
+// schemat 2 punktowy calkowania
+// PROGRAM OBLICZA JAKOBIAN DLA KAZDEGO ELEMENTU W SIATCE
 
 #include <iostream>
 #include <iomanip>
@@ -391,25 +392,25 @@ void jacobi(/*int elm_number,*/ int iter, double** J, double** J_inv, ELEMENT_2D
     std::cout<<" ; pc = "<<iter<<std::endl;
 
     for(int i = 0; i < 4; i++){
-        std::cout<<elmnt_4p.MATRIX_4P_DKSI[iter][i]<<"*"<<elmnt[i].x<<std::endl;
+       // std::cout<<elmnt_4p.MATRIX_4P_DKSI[iter][i]<<"*"<<elmnt[i].x<<std::endl;
         J[0][0] +=  elmnt_4p.MATRIX_4P_DKSI[iter][i]*elmnt[i].x;
     }
     std::cout<<std::endl;
 
     for(int i = 0; i < 4; i++){
-        std::cout<<elmnt_4p.MATRIX_4P_DKSI[iter][i]<<"*"<<elmnt[i].y<<std::endl;
+       // std::cout<<elmnt_4p.MATRIX_4P_DKSI[iter][i]<<"*"<<elmnt[i].y<<std::endl;
         J[0][1] +=  elmnt_4p.MATRIX_4P_DKSI[iter][i]*elmnt[i].y;
     }
     std::cout<<std::endl;
 
     for(int i = 0; i < 4; i++){
-        std::cout<<elmnt_4p.MATRIX_4P_DN[iter][i]<<"*"<<elmnt[i].x<<std::endl;
+     //   std::cout<<elmnt_4p.MATRIX_4P_DN[iter][i]<<"*"<<elmnt[i].x<<std::endl;
         J[1][0] +=  elmnt_4p.MATRIX_4P_DN[iter][i]*elmnt[i].x;
     }
     std::cout<<std::endl;
 
     for(int i = 0; i < 4; i++){
-        std::cout<<elmnt_4p.MATRIX_4P_DN[iter][i]<<"*"<<elmnt[i].y<<std::endl;
+      //  std::cout<<elmnt_4p.MATRIX_4P_DN[iter][i]<<"*"<<elmnt[i].y<<std::endl;
         J[1][1] +=  elmnt_4p.MATRIX_4P_DN[iter][i]*elmnt[i].y; 
     }
 
