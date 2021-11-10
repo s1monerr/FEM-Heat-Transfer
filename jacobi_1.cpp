@@ -23,10 +23,18 @@ class node{
 
     public:
         float x, y;
+        int weight;
+
+    node(float X, float Y, int W){
+        x = X;
+        y = Y;
+        weight = W;
+    }
 
     node(float X, float Y){
         x = X;
         y = Y;
+        weight = -1;
     }
 
     node(){
@@ -112,7 +120,7 @@ class grid{
         int counter = 0;
         for(int i = 0; i < nW; i++){
             for(int j = 0; j < nH; j++){
-                std::cout<<"Node  "<<std::setprecision(2)<<counter++<<", x = "<<nodes[i][j].x<<", y = "<<nodes[i][j].y<<std::endl;
+                std::cout<<"Node  "<<std::setprecision(2)<<counter++<<", x = "<<nodes[i][j].x<<", y = "<<nodes[i][j].y<<"   |    weight = "<<nodes[i][j].weight<<std::endl;
             }
         }
     }
@@ -143,7 +151,10 @@ void createNodes(grid gr){
 
         // interior loop - iteracja po rzedach
         for(int j = 0; j < gr.nH; j++){
-            gr.nodes[i][j] = node(x, y); // dodaj nowy wezel do tablicy
+            if(i == 0 || j == 0 | i == gr.nW - 1 || j == gr.nH - 1) // jesli wezel jest skrajny w siatce
+                gr.nodes[i][j] = node(x, y, 1); // dodaj nowy wezel do tablicy - waga = 1
+            else
+                gr.nodes[i][j] = node(x, y, 0);
             y += dy; // zwieksz y o dy
         }
     }
@@ -217,7 +228,7 @@ factors fac;
 
     public:
 
-        point array[4];
+        point *array;
         // dN/dPsi - funkcja wybierana przez 2 argument
         double integral_ksi(point p, int index){
             if(index == 0) return -0.25*(1-p.n);
@@ -243,13 +254,35 @@ factors fac;
             return -1;
         }
 
-        el_4_2d(){
+        el_4_2d(std::string FACTOR_CONST){ // rodzaj macierzy pochodnych - HBC, jesli dla obliczen macierzy obciazen
             fac = factors();
             // uzupelnij tablice punktami calkowania
-            array[0] = point(fac.point_2p[0], fac.point_2p[0]);
-            array[1] = point(fac.point_2p[0], fac.point_2p[1]);
-            array[2] = point(fac.point_2p[1], fac.point_2p[1]);
-            array[3] = point(fac.point_2p[1], fac.point_2p[0]);
+            if(FACTOR_CONST == "H"){
+                array = new point[4];
+                array[0] = point(fac.point_2p[0], fac.point_2p[0]);
+                array[1] = point(fac.point_2p[0], fac.point_2p[1]);
+                array[2] = point(fac.point_2p[1], fac.point_2p[1]);
+                array[3] = point(fac.point_2p[1], fac.point_2p[0]);
+            }
+            else if(FACTOR_CONST == "HBC"){
+                array = new point[4];
+                array[0] = point(-1, fac.point_2p[0]);
+                std::cout<<"point 1 ksi = "<<array[0].ksi<<" n = "<<array[0].n<<std::endl;
+                array[1] = point(-1, fac.point_2p[1]);
+                std::cout<<"point 2 ksi = "<<array[1].ksi<<" n = "<<array[1].n<<std::endl;
+                array[2] = point(fac.point_2p[0], 1);
+                std::cout<<"point 3 ksi = "<<array[2].ksi<<" n = "<<array[2].n<<std::endl;
+                array[3] = point(fac.point_2p[1], 1);
+                std::cout<<"point 4 ksi = "<<array[3].ksi<<" n = "<<array[3].n<<std::endl;
+                array[4] = point(1, fac.point_2p[1]);
+                std::cout<<"point 5 ksi = "<<array[4].ksi<<" n = "<<array[4].n<<std::endl;
+                array[5] = point(1, fac.point_2p[0]);
+                std::cout<<"point 6 ksi = "<<array[5].ksi<<" n = "<<array[5].n<<std::endl;
+                array[6] = point(fac.point_2p[1], -1);
+                std::cout<<"point 7 ksi = "<<array[6].ksi<<" n = "<<array[6].n<<std::endl;
+                array[7] = point(fac.point_2p[0], -1);
+                std::cout<<"point 8 ksi = "<<array[7].ksi<<" n = "<<array[7].n<<std::endl;
+            }
         }
 
         void count_matrix_4points_ksi(double **matrix){
@@ -675,8 +708,22 @@ void H_matrix_grid(grid *GRID, ELEMENT_2D_ARRAYS ELEMENT_1, bool if_print){
     delete[] nodes;
 }
 
+// bound - bound to count boundary codition on
+void count_Hbc_matrix(int bound, node elmnt[4]){
+    double **Hpc1 = new double*[4];
+    double **Hpc2 = new double*[4];
+    double *n1 = new double[4];
+    double *n2 = new double[4];
+    for(int i = 0; i < 4; i++){
+        for(int j = 0; j < 4; j++){
+            Hpc1[i] = new double[4];
+            Hpc2[i] = new double[4];
+        }
+    }
+}
+
 int main(){
-    el_4_2d element = el_4_2d();
+    el_4_2d element = el_4_2d("H");
     el_9_2d element_9 = el_9_2d();
 
     // macierz pochodnych dN/dksi - 4 wezly
@@ -735,10 +782,10 @@ int main(){
    // jacobi_grid(grid_1, ELEMENT_1);
 
     node temp_element[4];
-    node n0 = node(0,0);
-    node n1 = node(0.025, 0);
-    node n2 = node(0.025, 0.025);
-    node n3 = node(0, 0.025);
+    node n0 = node(0, 0, 1);
+    node n1 = node(0.025, 0, 1);
+    node n2 = node(0.025, 0.025, 1);
+    node n3 = node(0, 0.025, 1);
 
     temp_element[0] = n0;
     temp_element[1] = n1;
@@ -787,7 +834,9 @@ int main(){
         
         // count H matrices for grid
         H_matrix_grid(&grid_1, ELEMENT_1, false);
-        grid_1.print_H_matrices();
+        // grid_1.print_H_matrices();
 
+        // counting Hbc
+        el_4_2d element_HBC = el_4_2d("HBC");
     return 0;
 }
