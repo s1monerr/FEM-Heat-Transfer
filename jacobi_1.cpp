@@ -1,12 +1,14 @@
-// IMPLEMENTACJA JAKOBIANU - part 1 
+// IMPLEMENTACJA JAKOBIANU W SIATCE
 // schemat 2 punktowy calkowania
 // PROGRAM OBLICZA JAKOBIAN DLA KAZDEGO ELEMENTU W SIATCE
+// NASTEPNIE MACIERZ H DLA KAZDEGO ELEMENTU W SIATCE W KAZDYM PUNKCIE CALKOWANIA
 
 #include <iostream>
 #include <iomanip>
 #include <cmath>
 // #include "grid.h"
 
+#define EPSILON 0.00000001
 // PARAMETRY SIATKI
 //#ifndef WIDTH
 #define WIDTH 0.1 // szerokosc
@@ -15,12 +17,7 @@
 #define NODES_WIDTH 4 // ilosc wezlow szerokosc
 //#endif
 
-// #ifndef WIDTH
-#define WIDTH 0.1 // szerokosc
-#define HEIGTH 0.2 // wysokosc
-#define NODES_HEIGTH 5 // ilosc wezlow wysokosc
-#define NODES_WIDTH 4 // ilosc wezlow szerokosc
-// #endif
+void print(double **, int);
 
 class node{
 
@@ -38,20 +35,25 @@ class node{
 };
 
 class element{
-
     public:
-        //int id1, id2, id3, id4; // id wezlow
-        int id[4];
+        int id[4]; // node's id
+        
+        double **H; // H matrix for element
 
         element(int i1, int i2, int i3, int i4){
             id[0] = i1;
             id[1] = i2;
             id[2] = i3;
             id[3] = i4;
+            for(int i = 0; i < 4; i++){
+                H[i] = new double[4];
+            }
         }
 
-        element(){
-            ;
+        element(){;}
+
+        void print_H_matrix(){
+            print(H, 4);
         }
 };
 
@@ -113,6 +115,18 @@ class grid{
                 std::cout<<"Node  "<<std::setprecision(2)<<counter++<<", x = "<<nodes[i][j].x<<", y = "<<nodes[i][j].y<<std::endl;
             }
         }
+    }
+
+    void print_H_matrices(){
+        std::cout<<"=================== H MATRICES FOR GRID ==================="<<std::endl;
+        int counter = 0;
+        for(int i = 0; i < nW-1; i++){
+            for(int j = 0; j < nH-1; j++){
+                std::cout<<"ELEMENT "<<counter<<std::endl;
+                elements[i][j].print_H_matrix();
+                counter++;
+        }
+    }
     }
 
 };
@@ -231,12 +245,11 @@ factors fac;
 
         el_4_2d(){
             fac = factors();
-            int counter = 0;
-            for(int i = 0; i < 2; i++){
-                for(int j = 0; j < 2; j++){
-                    array[counter++] = point(fac.point_2p[i], fac.point_2p[j]);
-                }
-            }
+            // uzupelnij tablice punktami calkowania
+            array[0] = point(fac.point_2p[0], fac.point_2p[0]);
+            array[1] = point(fac.point_2p[0], fac.point_2p[1]);
+            array[2] = point(fac.point_2p[1], fac.point_2p[1]);
+            array[3] = point(fac.point_2p[1], fac.point_2p[0]);
         }
 
         void count_matrix_4points_ksi(double **matrix){
@@ -322,7 +335,18 @@ void print(double **matrix, int n){
     std::cout<<std::endl;
     for(int i = 0; i < n; i++){
         for(int j = 0; j < n; j++){
-            std::cout<<"["<<i<<"]["<<j<<"], "<<matrix[i][j]<<"  ;  ";
+            std::cout<<"["<<i<<"]["<<j<<"] "<<matrix[i][j]<<"  ;  ";
+        }
+        std::cout<<std::endl;
+    }
+    std::cout<<std::endl;
+}
+
+void print(double **matrix, int n, int precision){
+    std::cout<<std::endl;
+    for(int i = 0; i < n; i++){
+        for(int j = 0; j < n; j++){
+            std::cout<<"["<<i<<"]["<<j<<"] "<<std::setprecision(precision)<<matrix[i][j]<<"  ;  ";
         }
         std::cout<<std::endl;
     }
@@ -340,28 +364,6 @@ void print_9(double **matrix){
     std::cout<<std::endl;
 }
 
-class element_grid{
-
-    public:
-        double x[4]; // id wezlow
-        double y[4];
-
-        element_grid(double i1, double i2, double i3, double i4, double y1, double y2, double y3, double y4){
-            x[0] = i1;
-            x[1] = i2;
-            x[2] = i3;
-            x[3] = i4;
-            y[0] = y1;
-            y[1] = y2;
-            y[2] = y3;
-            y[3] = y4;
-        }
-
-        element_grid(){
-            ;
-        }
-};
-
 // final arrays from el_4_2d
 class ELEMENT_2D_ARRAYS{
     public:
@@ -376,13 +378,6 @@ class ELEMENT_2D_ARRAYS{
 
 double determinant(double **matrix) { return matrix[0][0]*matrix[1][1] - matrix[0][1]*matrix[1][0]; }
 
-// double multi_matrix_2x2(double **m1,){ 
-//     double sum = 0.0;
-//     for(int i = 0; i < 2; i++){
-//         for(int j = 0; j < 2; j++)
-//             sum += matrix
-//     }
-//  }
 
 // COUNT JACOBI MATRIX
 // node elmnt[4] - reprezentacja elementu z 4 wezlami w siatce
@@ -416,18 +411,20 @@ void jacobi(/*int elm_number,*/ int iter, double** J, double** J_inv, ELEMENT_2D
     }
 
     // print results
-    std::cout<<std::endl;
-    std::cout<<"JACOBI MATRIX: pc = "<<iter<<std::endl;
-    for(int i = 0; i < 2; i++){
-        for(int j = 0; j < 2; j++){
-            std::cout<<std::setprecision(5)<<"["<<j<<"]["<<i<<"], "<<J[i][j]<<"  ;  ";
-        }
-        std::cout<<std::endl;
-    }
+    // std::cout<<std::endl;
+    // std::cout<<"JACOBI MATRIX: pc = "<<iter<<std::endl;
+    // for(int i = 0; i < 2; i++){
+    //     for(int j = 0; j < 2; j++){
+    //         if(J[i][j] < EPSILON)
+    //             J[i][j] = 0;
+    //         std::cout<<std::setprecision(5)<<"["<<j<<"]["<<i<<"], "<<J[i][j]<<"  ;  ";
+    //     }
+    //     std::cout<<std::endl;
+    // }
 
-    std::cout<<std::setprecision(5)<<"DETERMINANT: "<<determinant(J)<<std::endl;
-    std::cout<<std::setprecision(5)<<"1/DETERMINANT: "<<1/determinant(J)<<std::endl;
-    std::cout<<std::endl;
+    // std::cout<<std::setprecision(5)<<"DETERMINANT: "<<determinant(J)<<std::endl;
+    // std::cout<<std::setprecision(5)<<"1/DETERMINANT: "<<1/determinant(J)<<std::endl;
+    // std::cout<<std::endl;
 }
 
 // COUNT JACOBI MATRIX FOR GRID
@@ -477,11 +474,205 @@ void jacobi_grid(grid GRID, ELEMENT_2D_ARRAYS ELEMENT_1){
         // inner loop -> 4 punkty calkowania dla kazdego 
         for(int j = 0; j < 4; j++){
                 double **jacobian = new double*[2];
-                    for(int k = 0; k < 2; k++)
+                double **jacobian_inv = new double*[2];
+                    for(int k = 0; k < 2; k++){
                         jacobian[k] = new double[2];
+                        jacobian_inv[k] = new double[2];
+                    }
             jacobi(/*i,*/j, jacobian, jacobian, ELEMENT_1, temp_element);
         }
     }
+}
+
+// *** COUNTING H MATRIX *** //
+void const_multi_matrix(double const_value, double **matrix, int size){    // function to multiply matrix by const
+    for(int i = 0; i < size; i++){
+        for(int j = 0; j < size; j++){
+            matrix[i][j] *= const_value;
+        }
+    }
+}
+
+// multiplication of matrice by transponed matrice
+double **multi_matrix_transponed(int size, double *matrix) {
+    double **result = new double*[size];
+    for(int i = 0; i < size; i++){
+        result[i] = new double[size];
+    }
+ 
+//  std::cout<<"counting: result "<<i<<"  "<<j<<" matrix[j] = "<<matrix[j]<<" matrixx[i]"<<matrix[k]<<std::endl;
+//                 result[i][k] += matrix[k] * matrix[k];
+//                 std::cout<<"RESULT[i][j] = "<<result[i][j]<<std::endl;
+    for (int i = 0; i < size; i++) {
+        for (int j = 0; j < size; j++) {
+            result[i][j] = matrix[i]*matrix[j];
+        }
+    }
+    return result;
+}
+
+// summing square matrices
+double **sum_matrix(double **matrix_1, double **matrix_2, int size){
+    double **result = new double*[size];
+    for(int i = 0; i < size; i++){
+        result[i] = new double[size];
+    }
+
+    for(int i = 0; i < 4; i++){
+        for(int j = 0; j < size; j++){
+            result[i][j] = matrix_1[i][j] + matrix_2[i][j];
+        }
+    }
+    return result;
+}
+
+// FUNCTION TO ADD ROW TO H MATRIX
+// matrix_dx, matrix_dy - temp matrices, iteration - punkt calkowania, element - integral dksi dn arrays
+void add_row(double **matrix_dx, double **matrix_dy, int iteration, double **jacobi, ELEMENT_2D_ARRAYS element){
+
+    double row[4]; // final row
+    // temp structures for f
+    double row_temp_x[4] = {0, 0, 0, 0};
+    double row_temp_y[4] = {0, 0, 0, 0};
+
+    int counter = 0; // row iterator
+    for(int i = 0; i < 4; i++){ // main loop - 4 integrals, inner loop - multiply dn/dX dn/dY by jacobi elements
+        for(int j = 0; j < 2; j++){
+          //  std::cout<<"counter = "<<counter<<"j = "<<j<<" jacobi[0][j] = "<<jacobi[0][j]<<" element = "<<element.MATRIX_4P_DKSI[iteration][j]<<std::endl;
+            if(j == 0)
+                row_temp_x[counter] += jacobi[0][j]*element.MATRIX_4P_DKSI[iteration][i];
+            else if(j == 1)
+                row_temp_x[counter] += jacobi[0][j]*element.MATRIX_4P_DN[iteration][i];
+          //  std::cout<<"counter = "<<counter<<"j = "<<j<<" jacobi[1][j] = "<<jacobi[1][j]<<" element = "<<element.MATRIX_4P_DKSI[iteration][j]<<std::endl;
+            if(j == 0)
+                row_temp_y[counter] += jacobi[1][j]*element.MATRIX_4P_DKSI[iteration][i];
+            else if(j == 1)
+                row_temp_y[counter] += jacobi[1][j]*element.MATRIX_4P_DN[iteration][i];
+        }
+       // std::cout<<"counter = "<<counter<<" x = "<<row_temp_x[counter]<<" y = "<<row_temp_y[counter]<<std::endl;
+        ++counter;
+    }
+
+    // fill matrices
+    for(int i = 0; i < 4; i++){
+        matrix_dx[iteration][i] = row_temp_x[i];
+        matrix_dy[iteration][i] = row_temp_y[i];
+    }
+}
+
+// FUNCTION TO COUNT H MATRIX FOR ELEMENT
+// iteration - punkt calkowania, jacobi - jakobian, element - tablica pochodnych dN i dKsi, print - flaga czy drukowac wyniki
+double** count_H_matrix(int iteration, double **jacobi, ELEMENT_2D_ARRAYS element, bool if_print){
+    double **DX_matrix = new double*[4];
+    double **DY_matrix = new double*[4]; // temp matrices inside integral
+    double ***H = new double**[4];
+    for(int i = 0; i  < 4; i++){
+        H[i] = new double*[4];
+        for(int j = 0; j < 4; j++)
+            H[i][j] = new double[4];
+        DX_matrix[i] = new double[4];
+        DY_matrix[i] = new double[4];
+    }
+
+    for(int i = 0; i < 4; i++)
+        add_row(DX_matrix, DY_matrix, i, jacobi, element);
+
+    // count row by transponed row for each pc (punkt calkowania)
+    double **X_mat = new double*[4];
+    double **Y_mat = new double*[4];
+    for(int i = 0; i < 4; i ++){
+        X_mat[i] = new double[4];
+        Y_mat[i] = new double[4];
+    }
+
+    double k = 30; // k(t) factor
+    double dV = 1/determinant(jacobi); // dV value
+    // final counting H
+    // 1 => X_mat + Y_mat
+
+        X_mat = multi_matrix_transponed(4, DX_matrix[iteration]);
+        Y_mat = multi_matrix_transponed(4, DY_matrix[iteration]);
+        H[iteration] = sum_matrix(X_mat, Y_mat, 4);
+        const_multi_matrix(k, H[iteration], 4);
+        const_multi_matrix(dV, H[iteration], 4);
+
+        if(if_print){
+            std::cout<<"H FOR PC "<<iteration<<std::endl;
+            print(H[iteration], 4, 5);
+        }
+        return H[iteration];
+}
+
+// *** COUNTING H MATRIX FOR ETNIRE GRID
+// parameters - grid, dN dKsi integrals element, boolean to print results or not 
+void H_matrix_grid(grid *GRID, ELEMENT_2D_ARRAYS ELEMENT_1, bool if_print){
+    // tablica 1d wezlow w siatce
+    node *nodes = new node[GRID->nodes_number];
+    element *elements = new element[GRID->elm_number];
+    // przepisywanie wezlow do tablicy 1d
+    int counter = 0;
+    for(int i = 0; i < GRID->nW; i++){
+        for(int j = 0; j < GRID->nH; j++){
+            nodes[counter] = GRID->nodes[i][j];
+                counter++;
+        }
+    }
+    
+    // przepisywanie elementow do tablicy 1d
+    counter = 0;
+    for(int i = 0; i < GRID->nW-1; i++){
+        for(int j = 0; j < GRID->nH-1; j++){
+            elements[counter] = GRID->elements[i][j];
+            counter++;
+        }
+    }
+
+    // deklaracja macierzy do przechowania Jakobianu
+    double **jacobian = new double*[2];
+    for(int i = 0; i < 2; i++)
+        jacobian[i] = new double[2];
+    
+    // MAIN ALHORITM
+    for(int i = 0; i < GRID->elm_number; i++){
+        // dla kazdego elementu stworz temp_element z 4 wezlami tego elementu
+        double **H_sum = new double*[4];
+        for(int k = 0; k < 4; k++){
+            H_sum[k] = new double[4];
+        }
+        node temp_element[4];
+        temp_element[0] = nodes[elements[i].id[0]];
+        temp_element[1] = nodes[elements[i].id[1]];
+        temp_element[2] = nodes[elements[i].id[2]];
+        temp_element[3] = nodes[elements[i].id[3]];
+        // inner loop -> 4 punkty calkowania dla kazdego 
+        if(if_print)
+            std::cout<<"================= COUNGTING H MATRIX FOR ELEMENT "<<i<<" ========================="<<std::endl;
+        for(int j = 0; j < 4; j++){
+                double **jacobian = new double*[2];
+                    for(int k = 0; k < 2; k++){
+                        jacobian[k] = new double[2];
+                    }
+            jacobi(/*i,*/j, jacobian, jacobian, ELEMENT_1, temp_element);
+            H_sum = sum_matrix(count_H_matrix(j, jacobian, ELEMENT_1, if_print), H_sum, 4);
+            delete[] jacobian;
+        }
+        if(if_print){
+            std::cout<<"SUMMED H MATRIX FOR ELEMENT "<<i<<std::endl;
+            print(H_sum, 4);}
+
+        elements[i].H = H_sum;
+    }
+
+    // save H matrix for each element in grid
+    counter = 0;
+    for(int i = 0; i < GRID->nW-1; i++){
+        for(int j = 0; j < GRID->nH-1; j++){
+            GRID->elements[i][j] = elements[counter];
+            counter++;
+        }
+    }
+    delete[] elements;
+    delete[] nodes;
 }
 
 int main(){
@@ -502,16 +693,16 @@ int main(){
     }
 
     // macierz pochodnych dN/dksi - 9 wezlow
-    double **matrix_ksi_9points = new double*[9];
-    for(int i = 0; i < 9; i++){
-        matrix_ksi_9points[i] = new double[4];
-    }
+    // double **matrix_ksi_9points = new double*[9];
+    // for(int i = 0; i < 9; i++){
+    //     matrix_ksi_9points[i] = new double[4];
+    // }
 
-    // macierz pochodnych dN/dn - 9 wezlow
-    double **matrix_n_9points = new double*[9];
-    for(int i = 0; i < 9; i++){
-        matrix_n_9points[i] = new double[4];
-    }
+    // // macierz pochodnych dN/dn - 9 wezlow
+    // double **matrix_n_9points = new double*[9];
+    // for(int i = 0; i < 9; i++){
+    //     matrix_n_9points[i] = new double[4];
+    // }
 
     // MATRIX 4X4, dN/dksi
     std::cout<<"==== RESULT FOR MATRIX[4][4]"<<", FUN = dN/dksi ===="<<std::endl;
@@ -524,18 +715,14 @@ int main(){
     print(matrix_n_4points, 4);
 
   //  std::cout<<"==== RESULT FOR MATRIX[4][9]"<<", FUN = dN/dksi ===="<<std::endl;
-    element_9.count_matrix_9points_ksi(matrix_ksi_9points);
+  //  element_9.count_matrix_9points_ksi(matrix_ksi_9points);
   //  print_9(matrix_ksi_9points);
 
    // std::cout<<"==== RESULT FOR MATRIX[4][9]"<<", FUN = dN/dn ===="<<std::endl;
-    element_9.count_matrix_9points_n(matrix_n_9points);
+  //  element_9.count_matrix_9points_n(matrix_n_9points);
   //  print_9(matrix_n_9points);
 
     ELEMENT_2D_ARRAYS ELEMENT_1 = ELEMENT_2D_ARRAYS(matrix_ksi_4points, matrix_n_4points);
-
-    double **jacobian = new double*[2];
-    for(int i = 0; i < 2; i++)
-        jacobian[i] = new double[2];
 
     // creating grid
     grid grid_1 = grid(HEIGTH, WIDTH, NODES_HEIGTH, NODES_WIDTH);
@@ -545,52 +732,62 @@ int main(){
     grid_1.printElements();
 
     // count J for grid
-    jacobi_grid(grid_1, ELEMENT_1);
+   // jacobi_grid(grid_1, ELEMENT_1);
 
-    // element_grid temp_element = element_grid(0, 0.025, 0.025, 0,
-    //                                     0, 0, 0.025, 0.025);
+    node temp_element[4];
+    node n0 = node(0,0);
+    node n1 = node(0.025, 0);
+    node n2 = node(0.025, 0.025);
+    node n3 = node(0, 0.025);
 
-    //  node temp_element[4];
-    //  int counter = 0;
-    //  for(int i = 0; i < 2; i++){
-        
-    //     for(int j = 0; j < 2; j++){
-    //         std::cout<<nodes[grid_1.elements[0][0].id[counter]][]<<std::endl;
-    //     //temp_element[counter] = grid_1.nodes[grid_1.elements[0][0].id[i]][j];
-    //     counter++;
-    //     }
-    // }
-    
-    // counter = 0;
-    // for(int i = 0; i < 2; i++){
-    //     for(int j = 0; j < 2; j++){
-    //         std::cout<<"node "<<counter<<" x = "<<temp_element[counter].x<<" y = "<<temp_element[counter].y<<std::endl;
-    //         counter++;
-    //     }
-    // }
-
-    // node temp_element[4];
-    // node n0 = node(0,0);
-    // node n1 = node(0.025, 0);
-    // node n2 = node(0.025, 0.025);
-    // node n3 = node(0, 0.025);
-
-    // temp_element[0] = n0;
-    // temp_element[1] = n1;
-    // temp_element[2] = n2;
-    // temp_element[3] = n3;
+    temp_element[0] = n0;
+    temp_element[1] = n1;
+    temp_element[2] = n2;
+    temp_element[3] = n3;
 
     // // count Jacobi example for 4 iterations (4 punkty calkowania)
-    // for(int i = 0; i < 4; i++)
-    //     jacobi(i,0, jacobian, jacobian, ELEMENT_1, temp_element);
-
-    // for(int i = 0; i < 2; i++){
-    //     for(int j = 0; j < 2; j++){
-    //         std::cout<<std::setprecision(5)<<"["<<j<<"]["<<i<<"], "<<jacobian[i][j]<<"  ;  ";
+    // for(int i = 0; i < 4; i++){
+    //     double **jacobian = new double*[2];
+    //     double **jacobian_inv = new double*[2];
+    //     for(int i = 0; i < 2; i++){
+    //            jacobian[i] = new double[2];
+    //            jacobian_inv[i] = new double[2];
+    //         }
+    //     jacobi(i, jacobian, jacobian_inv, ELEMENT_1, temp_element);
+    //     std::cout<<"JACOBI REVERSED: "<<std::endl;
+    //     const_multi_matrix(1/determinant(jacobian), jacobian, 2);
+    //     for(int i = 0; i < 2; i++){
+    //         for(int j = 0; j < 2; j++){
+    //             std::cout<<"   "<<jacobian[i][j]<<"     ";
+    //         }
+    //         std::cout<<std::endl;
     //     }
-    //     std::cout<<std::endl;
     // }
-    
+        double **jacobian = new double*[2];
+        double **jacobian_inv = new double*[2];
+        for(int i = 0; i < 2; i++){
+               jacobian[i] = new double[2];
+               jacobian_inv[i] = new double[2];
+            }
+        jacobi(0, jacobian, jacobian_inv, ELEMENT_1, temp_element);
+
+       
+        double **H = new double*[4];
+        for(int i = 0; i < 4; i++){
+            H[i] = new double[4];
+        }
+
+        // count matrix for example element - uncomment printing result in count_H_matrix function
+        std::cout<<"======================================================= "<<std::endl;
+        std::cout<<"Example element: "<<std::endl;
+        for(int i = 0; i < 4; i++)
+            count_H_matrix(i, jacobian, ELEMENT_1, true);
+        
+        std::cout<<"======================================================="<<std::endl;
+        
+        // count H matrices for grid
+        H_matrix_grid(&grid_1, ELEMENT_1, false);
+        grid_1.print_H_matrices();
 
     return 0;
 }
