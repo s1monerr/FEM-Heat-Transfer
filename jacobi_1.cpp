@@ -2,6 +2,7 @@
 // schemat 2 punktowy calkowania
 // PROGRAM OBLICZA JAKOBIAN DLA KAZDEGO ELEMENTU W SIATCE
 // NASTEPNIE MACIERZ H DLA KAZDEGO ELEMENTU W SIATCE W KAZDYM PUNKCIE CALKOWANIA
+// ORAZ MACIERZ WARUNKU BRZEGOWEGO Hbc
 
 #include <iostream>
 #include <iomanip>
@@ -301,6 +302,22 @@ factors fac;
             }
         }
 
+        void count_matrix_4points_ksi_HBC(double **matrix){
+            for(int i = 0; i < 8; i++){
+                for(int j = 0; j < 4; j++){
+                    matrix[i][j] = integral_ksi(array[i], j);
+                }
+            }
+        }
+
+        void count_matrix_4points_n_HBC(double **matrix){
+            for(int i = 0; i < 8; i++){
+                for(int j = 0; j < 4; j++){
+                    matrix[i][j] = integral_n(array[i], j);
+                }
+            }
+        }
+
 };
 
 // klasa - macierz jakobiego dla elementu 9 wezlowego
@@ -507,14 +524,18 @@ void jacobi_grid(grid GRID, ELEMENT_2D_ARRAYS ELEMENT_1){
         // inner loop -> 4 punkty calkowania dla kazdego 
         for(int j = 0; j < 4; j++){
                 double **jacobian = new double*[2];
-                double **jacobian_inv = new double*[2];
                     for(int k = 0; k < 2; k++){
                         jacobian[k] = new double[2];
-                        jacobian_inv[k] = new double[2];
                     }
             jacobi(/*i,*/j, jacobian, jacobian, ELEMENT_1, temp_element);
+                    for(int k = 0; k < 2; k++){
+                        delete jacobian[k];
+                    }
+                    delete[] jacobian;
         }
     }
+    delete[] nodes;
+    delete[] elements;
 }
 
 // *** COUNTING H MATRIX *** //
@@ -591,6 +612,7 @@ void add_row(double **matrix_dx, double **matrix_dy, int iteration, double **jac
         matrix_dx[iteration][i] = row_temp_x[i];
         matrix_dy[iteration][i] = row_temp_y[i];
     }
+    
 }
 
 // FUNCTION TO COUNT H MATRIX FOR ELEMENT
@@ -633,6 +655,16 @@ double** count_H_matrix(int iteration, double **jacobi, ELEMENT_2D_ARRAYS elemen
             std::cout<<"H FOR PC "<<iteration<<std::endl;
             print(H[iteration], 4, 5);
         }
+        for(int i = 0; i < 4; i ++){
+            delete X_mat[i];
+            delete Y_mat[i];
+            delete DX_matrix[i];
+            delete DY_matrix[i];
+        }
+        delete[] X_mat;
+        delete[] Y_mat;
+        delete[] DY_matrix;
+        delete[] DX_matrix;
         return H[iteration];
 }
 
@@ -687,6 +719,8 @@ void H_matrix_grid(grid *GRID, ELEMENT_2D_ARRAYS ELEMENT_1, bool if_print){
                     }
             jacobi(/*i,*/j, jacobian, jacobian, ELEMENT_1, temp_element);
             H_sum = sum_matrix(count_H_matrix(j, jacobian, ELEMENT_1, if_print), H_sum, 4);
+            for(int k = 0; k < 2; k++)
+                delete jacobian[k];
             delete[] jacobian;
         }
         if(if_print){
@@ -811,18 +845,10 @@ int main(){
     //     }
     // }
         double **jacobian = new double*[2];
-        double **jacobian_inv = new double*[2];
         for(int i = 0; i < 2; i++){
                jacobian[i] = new double[2];
-               jacobian_inv[i] = new double[2];
             }
-        jacobi(0, jacobian, jacobian_inv, ELEMENT_1, temp_element);
-
-       
-        double **H = new double*[4];
-        for(int i = 0; i < 4; i++){
-            H[i] = new double[4];
-        }
+        jacobi(0, jacobian, jacobian, ELEMENT_1, temp_element);
 
         // count matrix for example element - uncomment printing result in count_H_matrix function
         std::cout<<"======================================================= "<<std::endl;
@@ -833,10 +859,28 @@ int main(){
         std::cout<<"======================================================="<<std::endl;
         
         // count H matrices for grid
-        H_matrix_grid(&grid_1, ELEMENT_1, false);
+        H_matrix_grid(&grid_1, ELEMENT_1, true);
         // grid_1.print_H_matrices();
 
         // counting Hbc
         el_4_2d element_HBC = el_4_2d("HBC");
+        // macierz pochodnych dN/dksi - 4 wezly
+        for(int i = 0; i < 4; i++){
+            delete matrix_ksi_4points[i];
+            delete matrix_n_4points[i];
+        }
+        delete[] matrix_n_4points;
+        delete[] matrix_ksi_4points;
+        delete[] jacobian;
+        
+        double **H = new double*[8];
+        // const int s = 8;
+        // double **matrix_n_4points_HBC = new double*[8];
+        // for(int i = 0; i < 8; i++){
+        //     std::cout<<"here i = "<<i<<std::endl;
+        //     //matrix_ksi_4points_HBC[i] = new double[4];
+        //     matrix_n_4points_HBC[i] = new double[0];
+        // }
+
     return 0;
 }
