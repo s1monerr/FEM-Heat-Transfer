@@ -621,35 +621,35 @@ factors fac;
             return -1;
         }
 
-        el_4_2d(std::string FACTOR_CONST){ // rodzaj macierzy pochodnych - HBC, jesli dla obliczen macierzy obciazen
+        el_4_2d(/*std::string FACTOR_CONST*/){ // rodzaj macierzy pochodnych - HBC, jesli dla obliczen macierzy obciazen
             fac = factors();
             // uzupelnij tablice punktami calkowania
-            if(FACTOR_CONST == "H"){
+            // if(FACTOR_CONST == "H"){
                 array = new point[4];
                 array[0] = point(fac.point_2p[0], fac.point_2p[0]);
                 array[1] = point(fac.point_2p[0], fac.point_2p[1]);
                 array[2] = point(fac.point_2p[1], fac.point_2p[1]);
                 array[3] = point(fac.point_2p[1], fac.point_2p[0]);
-            }
-            else if(FACTOR_CONST == "HBC"){
-                array = new point[4];
-                array[0] = point(-1, fac.point_2p[0]);
-                // std::cout<<"point 1 ksi = "<<array[0].ksi<<" n = "<<array[0].n<<std::endl;
-                array[1] = point(-1, fac.point_2p[1]);
-                // std::cout<<"point 2 ksi = "<<array[1].ksi<<" n = "<<array[1].n<<std::endl;
-                array[2] = point(fac.point_2p[0], 1);
-                // std::cout<<"point 3 ksi = "<<array[2].ksi<<" n = "<<array[2].n<<std::endl;
-                array[3] = point(fac.point_2p[1], 1);
-                // std::cout<<"point 4 ksi = "<<array[3].ksi<<" n = "<<array[3].n<<std::endl;
-                array[4] = point(1, fac.point_2p[1]);
-                // std::cout<<"point 5 ksi = "<<array[4].ksi<<" n = "<<array[4].n<<std::endl;
-                array[5] = point(1, fac.point_2p[0]);
-                // std::cout<<"point 6 ksi = "<<array[5].ksi<<" n = "<<array[5].n<<std::endl;
-                array[6] = point(fac.point_2p[1], -1);
-                // std::cout<<"point 7 ksi = "<<array[6].ksi<<" n = "<<array[6].n<<std::endl;
-                array[7] = point(fac.point_2p[0], -1);
-                // std::cout<<"point 8 ksi = "<<array[7].ksi<<" n = "<<array[7].n<<std::endl;
-            }
+            // }
+            // else if(FACTOR_CONST == "HBC"){
+            //     array = new point[4];
+            //     array[0] = point(-1, fac.point_2p[0]);
+            //     // std::cout<<"point 1 ksi = "<<array[0].ksi<<" n = "<<array[0].n<<std::endl;
+            //     array[1] = point(-1, fac.point_2p[1]);
+            //     // std::cout<<"point 2 ksi = "<<array[1].ksi<<" n = "<<array[1].n<<std::endl;
+            //     array[2] = point(fac.point_2p[0], 1);
+            //     // std::cout<<"point 3 ksi = "<<array[2].ksi<<" n = "<<array[2].n<<std::endl;
+            //     array[3] = point(fac.point_2p[1], 1);
+            //     // std::cout<<"point 4 ksi = "<<array[3].ksi<<" n = "<<array[3].n<<std::endl;
+            //     array[4] = point(1, fac.point_2p[1]);
+            //     // std::cout<<"point 5 ksi = "<<array[4].ksi<<" n = "<<array[4].n<<std::endl;
+            //     array[5] = point(1, fac.point_2p[0]);
+            //     // std::cout<<"point 6 ksi = "<<array[5].ksi<<" n = "<<array[5].n<<std::endl;
+            //     array[6] = point(fac.point_2p[1], -1);
+            //     // std::cout<<"point 7 ksi = "<<array[6].ksi<<" n = "<<array[6].n<<std::endl;
+            //     array[7] = point(fac.point_2p[0], -1);
+            //     // std::cout<<"point 8 ksi = "<<array[7].ksi<<" n = "<<array[7].n<<std::endl;
+            // }
         }
 
         void count_matrix_4points_ksi(double **matrix){
@@ -727,7 +727,7 @@ factors fac;
             int counter = 0;
             for(int i = 0; i < 3; i++){
                 for(int j = 0; j < 3; j++){
-                    array[counter] = point(fac.point_3p[j], fac.point_3p[i]);
+                    array[counter] = point(fac.point_3p[i], fac.point_3p[j]);
                     // std::cout<<"point: ksi = "<<array[counter].ksi<<" n = "<<array[counter].n<<std::endl;
                     weights[counter] = fac.w_3p[i]*fac.w_3p[j];
                     // std::cout<<"w[i] = "<<fac.w_3p[i]<<" w[j] = "<<fac.w_3p[j]<<"   ";
@@ -735,6 +735,17 @@ factors fac;
                     counter++;
                 }
             }
+            // std::cout<<"punkty 3 punktowy schemat:\n";
+            // counter = 0;
+            // for(int i = 0; i < 3; i++){
+            //     for(int j = 0; j < 3; j++){
+            //         std::cout<<"counter = "<<counter<<std::endl;
+            //         std::cout<<"point: ksi = "<<array[counter].ksi<<" n = "<<array[counter].n<<std::endl;
+            //         // std::cout<<"w[i] = "<<fac.w_3p[i]<<" w[j] = "<<fac.w_3p[j]<<"   ";
+            //         std::cout<<"w = "<<weights[counter]<<std::endl<<std::endl;
+            //         counter++;
+            //     }
+            // }
             // array[0] = point(fac.point_3p[0], fac.point_3p[0]);
             // array[1] = point(fac.point_3p[1], fac.point_3p[0]);
             // array[2] = point(fac.point_3p[2], fac.point_3p[0]);
@@ -743,7 +754,10 @@ factors fac;
         void count_matrix_9points_ksi(double **matrix){
             for(int i = 0; i < 9; i++){
                 for(int j = 0; j < 4; j++){
+                    // std::cout<<"punkt calkowania: "<<i<<" funkcja: "<<j<<"\n";
+                    // std::cout<<" punkt calkowania: ksi = "<<array[i].ksi<< " n = "<<array[i].n<<std::endl;
                     matrix[i][j] = integral_ksi(array[i], j);
+                    // std::cout<<" wynik = "<<matrix[i][j]<<std::endl;
                 }
             }
         }
@@ -780,6 +794,7 @@ factors fac;
     public:
 
         point *array;
+        point *array_3points;
         // funkcja ksztaltu < N1 - N4 > 
         double shape_fun(point p, int index){
             if(index == 0) return 0.25*(1-p.ksi)*(1-p.n);
@@ -793,7 +808,7 @@ factors fac;
             return -1;
         }
 
-        el_4_2d_HBC(){ // rodzaj macierzy pochodnych - HBC, jesli dla obliczen macierzy obciazen
+        el_4_2d_HBC(){ // macierz funkcji ksztaltu dla punktow calkowania - HBC, jesli dla obliczen macierzy obciazen
             fac = factors();
             // uzupelnij tablice punktami calkowania
                 array = new point[8];
@@ -813,6 +828,21 @@ factors fac;
                 // std::cout<<"point 7 ksi = "<<array[6].ksi<<" n = "<<array[6].n<<std::endl;
                 array[7] = point(-1, fac.point_2p[0]);
                 // std::cout<<"point 8 ksi = "<<array[7].ksi<<" n = "<<array[7].n<<std::endl;
+
+                // 3 punktowy schemat calkowania
+                // array_3points = new point[12];
+                // array_3points[0] = point(fac.point_3p[0], -1);
+                // array_3points[1] = point(fac.point_3p[1], -1);
+                // array_3points[2] = point(fac.point_3p[2], -1);
+                // array_3points[3] = point(1, fac.point_3p[2]);
+                // array_3points[4] = point(1, fac.point_3p[1]);
+                // array_3points[5] = point(1, fac.point_3p[2]);
+                // array_3points[6] = point(fac.point_3p[2], 1);
+                // array_3points[7] = point(fac.point_3p[1], 1);
+                // array_3points[8] = point(fac.point_3p[0], 1);
+                // array_3points[9] = point(-1, fac.point_3p[2]);
+                // array_3points[10] = point(-1, fac.point_3p[1]);
+                // array_3points[11] = point(-1, fac.point_3p[0]);
         }
 
         void count_matrix_4points(double **matrix){
@@ -825,6 +855,71 @@ factors fac;
         }
 };
 
+class el_9_2d_HBC{
+    factors fac;
+    public:
+
+        point *array;
+        point *array_3points;
+        // funkcja ksztaltu < N1 - N4 > 
+        double shape_fun(point p, int index){
+            if(index == 0) return 0.25*(1-p.ksi)*(1-p.n);
+            
+            else if (index == 1) return 0.25*(1-p.n)*(1+p.ksi);
+        
+            else if(index == 2) return 0.25*(1+p.n)*(1+p.ksi);
+        
+            else if (index == 3) return 0.25*(1+p.n)*(1-p.ksi);
+
+            return -1;
+        }
+
+        el_9_2d_HBC(){ // macierz funkcji ksztaltu dla punktow calkowania - HBC, jesli dla obliczen macierzy obciazen
+            fac = factors();
+            // uzupelnij tablice punktami calkowania
+                // array = new point[8];
+                // array[0] = point(fac.point_2p[0], -1);
+                // // std::cout<<"point 1 ksi = "<<array[0].ksi<<" n = "<<array[0].n<<std::endl;
+                // array[1] = point(fac.point_2p[1], -1);
+                // // std::cout<<"point 2 ksi = "<<array[1].ksi<<" n = "<<array[1].n<<std::endl;
+                // array[2] = point(1, fac.point_2p[0]);
+                // // std::cout<<"point 3 ksi = "<<array[2].ksi<<" n = "<<array[2].n<<std::endl;
+                // array[3] = point(1, fac.point_2p[1]);
+                // // std::cout<<"point 4 ksi = "<<array[3].ksi<<" n = "<<array[3].n<<std::endl;
+                // array[4] = point(fac.point_2p[1], 1);
+                // // std::cout<<"point 5 ksi = "<<array[4].ksi<<" n = "<<array[4].n<<std::endl;
+                // array[5] = point(fac.point_2p[0], 1);
+                // // std::cout<<"point 6 ksi = "<<array[5].ksi<<" n = "<<array[5].n<<std::endl;
+                // array[6] = point(-1, fac.point_2p[1]);
+                // // std::cout<<"point 7 ksi = "<<array[6].ksi<<" n = "<<array[6].n<<std::endl;
+                // array[7] = point(-1, fac.point_2p[0]);
+                // // std::cout<<"point 8 ksi = "<<array[7].ksi<<" n = "<<array[7].n<<std::endl;
+
+                // 3 punktowy schemat calkowania
+                array = new point[12];
+                array[0] = point(fac.point_3p[0], -1);
+                array[1] = point(fac.point_3p[1], -1);
+                array[2] = point(fac.point_3p[2], -1);
+                array[3] = point(1, fac.point_3p[2]);
+                array[4] = point(1, fac.point_3p[1]);
+                array[5] = point(1, fac.point_3p[2]);
+                array[6] = point(fac.point_3p[2], 1);
+                array[7] = point(fac.point_3p[1], 1);
+                array[8] = point(fac.point_3p[0], 1);
+                array[9] = point(-1, fac.point_3p[2]);
+                array[10] = point(-1, fac.point_3p[1]);
+                array[11] = point(-1, fac.point_3p[0]);
+        }
+
+        void count_matrix_9points(double **matrix){
+            for(int i = 0; i < 12; i++){
+                for(int j = 0; j < 4; j++){
+                    // std::cout<<"i = "<<i<<" j = "<<j<<" array[i].ksi = "<<array[i].ksi<<" array[i].n = "<<array[i].n<<std::endl;
+                    matrix[i][j] = shape_fun(array[i], j);
+                }
+            }
+        }
+};
 
 class el_4_2d_C{
 
@@ -846,7 +941,7 @@ factors fac;
             return -1;
         }
 
-        el_4_2d_C(){ // rodzaj macierzy pochodnych - HBC, jesli dla obliczen macierzy obciazen
+        el_4_2d_C(){ 
             fac = factors();
             // uzupelnij tablice punktami calkowania
                 array = new point[4];
@@ -862,6 +957,54 @@ factors fac;
 
         void count_matrix_4points(double **matrix){
             for(int i = 0; i < 4; i++){
+                for(int j = 0; j < 4; j++){
+                    // std::cout<<"i = "<<i<<" j = "<<j<<" array[i].ksi = "<<array[i].ksi<<" array[i].n = "<<array[i].n<<std::endl;
+                    matrix[i][j] = shape_fun(array[i], j);
+                    // std::cout<<"counted"<<std::endl;
+                }
+            }
+        }
+};
+
+class el_9_2d_C{ // do schematu 3punktowego
+
+factors fac;
+
+    public:
+
+        point array[9];
+        double weights[9];
+        // funkcja ksztaltu < N1 - N4 > 
+        double shape_fun(point p, int index){
+            if(index == 0) {return 0.25*(1-p.ksi)*(1-p.n);}
+            
+            else if (index == 1) return 0.25*(1-p.n)*(1+p.ksi);
+        
+            else if(index == 2) return 0.25*(1+p.n)*(1+p.ksi);
+        
+            else if (index == 3) return 0.25*(1+p.n)*(1-p.ksi);
+
+            return -1;
+        }
+
+        el_9_2d_C(){ 
+            fac = factors();
+            // uzupelnij tablice punktami calkowania
+            int counter = 0;
+            for(int i = 0; i < 3; i++){
+                for(int j = 0; j < 3; j++){
+                    array[counter] = point(fac.point_3p[i], fac.point_3p[j]);
+                    // std::cout<<"point: ksi = "<<array[counter].ksi<<" n = "<<array[counter].n<<std::endl;
+                    weights[counter] = fac.w_3p[i]*fac.w_3p[j];
+                    // std::cout<<"w[i] = "<<fac.w_3p[i]<<" w[j] = "<<fac.w_3p[j]<<"   ";
+                    // std::cout<<"w = "<<weights[counter]<<std::endl<<std::endl;
+                    counter++;
+                }
+            }
+        }
+
+        void count_matrix_9points(double **matrix){
+            for(int i = 0; i < 9; i++){
                 for(int j = 0; j < 4; j++){
                     // std::cout<<"i = "<<i<<" j = "<<j<<" array[i].ksi = "<<array[i].ksi<<" array[i].n = "<<array[i].n<<std::endl;
                     matrix[i][j] = shape_fun(array[i], j);
@@ -957,7 +1100,10 @@ void print_custom(double **matrix, int rows, int columns, int precision){
 
 // grid - grid to fill element's HBC, id - element id, nw nh - number of nodes in element's array
 // nodes - element nodes, values - shape function values, cond - conductivity in fourier formula
-double** count_bound_HBC(node* nodes, double **values, double cond, bool if_print){
+double** count_bound_HBC(int integration_points, node* nodes, double **values, double cond, bool if_print){
+
+    factors fac = factors();
+
     double ** result_HBC = new double*[4]; // final HBC for element
     for(int i = 0; i < 4; i++){
         result_HBC[i] = new double[4];
@@ -990,19 +1136,31 @@ double** count_bound_HBC(node* nodes, double **values, double cond, bool if_prin
                 // temp structures
                 double **bound_p1 = new double*[4];
                 double **bound_p2 = new double*[4];
+                double **bound_p3 = new double*[4]; // schemat 3 puntkowy
                 double **bound_HBC = new double*[4];
                 for(int j = 0; j < 4; j++){
                     bound_HBC[j] = new double[4];
                     bound_p1[j] = new double[4];
                     bound_p2[j] = new double[4];
+                    bound_p3[j] = new double[4];
                     for(int k = 0; k < 4; k++){ 
                             bound_HBC[j][k] = 0;
                             bound_p1[j][k] = 0;
                             bound_p2[j][k] = 0;
+                            bound_p3[j][k] = 0;
                         }
                 }
-                bound_p1 = multi_vectors(4, values[2*i]);
-                bound_p2 = multi_vectors(4, values[(2*i)+1]);
+                bound_p1 = multi_vectors(4, values[integration_points*i]);
+                bound_p2 = multi_vectors(4, values[(integration_points*i)+1]);
+
+                if(integration_points == 3){ // schemat 3 punktowy
+                    bound_p3 = multi_vectors(4, values[(integration_points*i)+2]);
+                    const_multi_matrix(fac.w_3p[2], bound_p3, 4);
+                    const_multi_matrix(fac.w_3p[1], bound_p2, 4);
+                    const_multi_matrix(fac.w_3p[0], bound_p1, 4);
+                    bound_p2 = sum_matrix(bound_p2, bound_p3, 4);
+                }
+
                 bound_HBC = sum_matrix(bound_p1, bound_p2, 4);
                 const_multi_matrix(cond, bound_HBC, 4);
                 const_multi_matrix(J, bound_HBC, 4);
@@ -1042,19 +1200,32 @@ double** count_bound_HBC(node* nodes, double **values, double cond, bool if_prin
                 // temp structures
                 double **bound_p1 = new double*[4];
                 double **bound_p2 = new double*[4];
+                double **bound_p3 = new double*[4];
                 double **bound_HBC = new double*[4];
                 for(int j = 0; j < 4; j++){
                     bound_HBC[j] = new double[4];
                     bound_p1[j] = new double[4];
                     bound_p2[j] = new double[4];
+                    bound_p3[j] = new double[4];
+
                     for(int k = 0; k < 4; k++){ 
                             bound_HBC[j][k] = 0;
                             bound_p1[j][k] = 0;
                             bound_p2[j][k] = 0;
+                            bound_p3[j][k] = 0;
                         }
                 }
-                bound_p1 = multi_vectors(4, values[2*i]);
-                bound_p2 = multi_vectors(4, values[2*i+1]);
+                bound_p1 = multi_vectors(4, values[integration_points*i]);
+                bound_p2 = multi_vectors(4, values[integration_points*i+1]);
+
+                if(integration_points == 3){ // schemat 3 punktowy
+                    bound_p3 = multi_vectors(4, values[(integration_points*i)+2]);
+                    const_multi_matrix(fac.w_3p[2], bound_p3, 4);
+                    const_multi_matrix(fac.w_3p[1], bound_p2, 4);
+                    const_multi_matrix(fac.w_3p[0], bound_p1, 4);
+                    bound_p2 = sum_matrix(bound_p2, bound_p3, 4);
+                }
+
                 bound_HBC = sum_matrix(bound_p1, bound_p2, 4);
                 const_multi_matrix(cond, bound_HBC, 4);
                 const_multi_matrix(J, bound_HBC, 4);
@@ -1089,7 +1260,7 @@ double** count_bound_HBC(node* nodes, double **values, double cond, bool if_prin
     else return NULL;
 }
 
-void count_HBC_grid(grid *GRID, bool if_print, double **values, double cond){
+void count_HBC_grid(int iteration_points, grid *GRID, bool if_print, double **values, double cond){
     node *nodes = new node[GRID->nodes_number];
     element *elements = new element[GRID->elm_number];
     // przepisywanie wezlow do tablicy 1d
@@ -1124,7 +1295,7 @@ void count_HBC_grid(grid *GRID, bool if_print, double **values, double cond){
         
         if(if_print)
             std::cout<<"================= COUNGTING HBC MATRICES FOR ELEMENT "<<i<<" ========================="<<std::endl;
-        elements[i].HBC = count_bound_HBC(temp_element, values, cond, if_print);
+        elements[i].HBC = count_bound_HBC(iteration_points, temp_element, values, cond, if_print);
         if(elements[i].HBC != NULL)
             fix_values(elements[i].HBC, 4);
     }
@@ -1264,7 +1435,7 @@ double** count_bound_HBC_3(node* nodes, double **values, double cond, bool if_pr
     else return NULL;
 }
 
-void count_HBC_grid_3(grid *GRID, bool if_print, double **values, double cond){
+void count_HBC_grid_3(int iteration_points, grid *GRID, bool if_print, double **values, double cond){
     node *nodes = new node[GRID->nodes_number];
     element *elements = new element[GRID->elm_number];
     // przepisywanie wezlow do tablicy 1d
@@ -1299,7 +1470,7 @@ void count_HBC_grid_3(grid *GRID, bool if_print, double **values, double cond){
         
         if(if_print)
             std::cout<<"================= COUNGTING HBC MATRICES FOR ELEMENT "<<i<<" ========================="<<std::endl;
-        elements[i].HBC = count_bound_HBC(temp_element, values, cond, if_print);
+        elements[i].HBC = count_bound_HBC(iteration_points,temp_element, values, cond, if_print);
         if(elements[i].HBC != NULL)
             fix_values(elements[i].HBC, 4);
     }
@@ -1520,19 +1691,24 @@ double **multi_matrix_transponed(int size, double *matrix) {
 // nodes - temp element, C_shape_values - shape functions values
 // c - specific heat, density - element density. if_print - printing results flag
 // JACOBIAN - @TODO J - jacobian
-double **count_C_matrix(node *nodes, double **C_shape_values, double c, double density, ELEMENT_2D_ARRAYS ELEMENT, bool if_print){
+double **count_C_matrix(int integration_points, node *nodes, double **C_shape_values, double c, double density, ELEMENT_2D_ARRAYS ELEMENT, bool if_print){
+
+    int integrals = integration_points*integration_points;
+    el_9_2d_C temp = el_9_2d_C();
+
     double **result = new double*[4];
     for(int i = 0; i < 4; i++){
         result[i] = new double[4];
     }
 
     // MAIN LOOP - integration points
-    for(int i = 0; i < 4; i++){
+    for(int i = 0; i < integrals; i++){
         double *vec_bound = new double[4];
         for(int j = 0; j < 4; j++){
             vec_bound[j] = 0;
             vec_bound[j] = C_shape_values[i][j];
         }
+        
 
             double **C_mat_bound = new double*[4];
             for(int m = 0; m < 4; m ++){
@@ -1543,17 +1719,22 @@ double **count_C_matrix(node *nodes, double **C_shape_values, double c, double d
             const_multi_matrix(c, C_mat_bound, 4);
             const_multi_matrix(density, C_mat_bound, 4);
 
+            if(integration_points == 3){ // wagi dla schematu 3 punktowego
+                const_multi_matrix(temp.weights[i], C_mat_bound, 4);
+            } 
+
             // JACOBIAN TO BE COUNTED
             double **jac = new double*[2];
             for(int i = 0; i < 2; i++) jac[i] = new double[2];
-            jacobi(2, i, jac, ELEMENT, nodes);
+            jacobi(integration_points, i, jac, ELEMENT, nodes);
             double J = determinant(jac);
             const_multi_matrix(J, C_mat_bound, 4);
 
             if(if_print){
-                std::cout<<"=== C MATRIX FOR BOUND "<<i<<" ==="<<std::endl;
+                std::cout<<"=== C MATRIX FOR PC "<<i<<" ==="<<std::endl;
                 print_custom(C_mat_bound, 4, 4, 4);
             }
+            
             
             // save results in result matrix
             for(int k = 0; k < 4; k++){
@@ -1561,6 +1742,7 @@ double **count_C_matrix(node *nodes, double **C_shape_values, double c, double d
                     result[k][l] += C_mat_bound[k][l];
                 }
             }
+            
 
             for(int k = 0; k < 4; k++){
                 delete C_mat_bound[k];
@@ -1571,7 +1753,7 @@ double **count_C_matrix(node *nodes, double **C_shape_values, double c, double d
     return result;
 }
 
-void count_C_matrix_grid(grid *GRID, double **C_shape_values, double c, double density, ELEMENT_2D_ARRAYS ELEMENT, bool if_print){
+void count_C_matrix_grid(int integration_points, grid *GRID, double **C_shape_values, double c, double density, ELEMENT_2D_ARRAYS ELEMENT, bool if_print){
     // tablica 1d wezlow w siatce
     node *nodes = new node[GRID->nodes_number];
     element *elements = new element[GRID->elm_number];
@@ -1615,7 +1797,7 @@ void count_C_matrix_grid(grid *GRID, double **C_shape_values, double c, double d
             std::cout<<"================= COUNGTING C MATRIX FOR ELEMENT "<<i<<" ========================="<<std::endl;
         
 
-        C_sum = sum_matrix(count_C_matrix(temp_element, C_shape_values, c, density, ELEMENT, if_print), C_sum, 4);
+        C_sum = sum_matrix(count_C_matrix(integration_points, temp_element, C_shape_values, c, density, ELEMENT, if_print), C_sum, 4);
             
         if(if_print){
             std::cout<<"SUMMED C MATRIX FOR ELEMENT "<<i<<std::endl;
@@ -1654,8 +1836,9 @@ void jacobi(const int POINTS, int iter, double** J, ELEMENT_2D_ARRAYS integrals,
             //std::cout<<integrals.MATRIX_4P_DKSI[iter][i]<<"*"<<elmnt[i].x<<std::endl;
             if(POINTS == 2)
                 J[0][0] +=  integrals.MATRIX_4P_DKSI[iter][i]*elmnt[i].x;
-            else   
-                J[0][0] +=  integrals.MATRIX_4P_DKSI[iter][i]*elmnt[i].x*temp.weights[iter];
+            else  { 
+                J[0][0] +=  integrals.MATRIX_4P_DKSI[iter][i]*elmnt[i].x;//*temp.weights[iter];
+            }
         }
     // std::cout<<std::endl;
 
@@ -1663,8 +1846,9 @@ void jacobi(const int POINTS, int iter, double** J, ELEMENT_2D_ARRAYS integrals,
         //   std::cout<<integrals.MATRIX_4P_DKSI[iter][i]<<"*"<<elmnt[i].y<<std::endl;
             if(POINTS == 2)
                 J[0][1] +=  integrals.MATRIX_4P_DKSI[iter][i]*elmnt[i].y;
-            else
-                J[0][1] +=  integrals.MATRIX_4P_DKSI[iter][i]*elmnt[i].y*temp.weights[iter];
+            else{
+                J[0][1] +=  integrals.MATRIX_4P_DKSI[iter][i]*elmnt[i].y;//*temp.weights[iter];
+            }
         }
         //std::cout<<std::endl;
 
@@ -1672,8 +1856,9 @@ void jacobi(const int POINTS, int iter, double** J, ELEMENT_2D_ARRAYS integrals,
         //  std::cout<<integrals.MATRIX_4P_DN[iter][i]<<"*"<<elmnt[i].x<<std::endl;
             if(POINTS == 2)
                 J[1][0] +=  integrals.MATRIX_4P_DN[iter][i]*elmnt[i].x;
-            else
-                J[1][0] +=  integrals.MATRIX_4P_DN[iter][i]*elmnt[i].x*temp.weights[iter];
+            else{
+                J[1][0] +=  integrals.MATRIX_4P_DN[iter][i]*elmnt[i].x;//*temp.weights[iter];
+            }
         }
         //std::cout<<std::endl;
 
@@ -1681,8 +1866,9 @@ void jacobi(const int POINTS, int iter, double** J, ELEMENT_2D_ARRAYS integrals,
         //  std::cout<<integrals.MATRIX_4P_DN[iter][i]<<"*"<<elmnt[i].y<<std::endl;
             if(POINTS == 2)
                 J[1][1] +=  integrals.MATRIX_4P_DN[iter][i]*elmnt[i].y;
-            else
-                J[1][1] +=  integrals.MATRIX_4P_DN[iter][i]*elmnt[i].y*temp.weights[iter];
+            else{
+                J[1][1] +=  integrals.MATRIX_4P_DN[iter][i]*elmnt[i].y;//*temp.weights[iter];
+            }
         }
     }
     else
@@ -1754,6 +1940,7 @@ void jacobi(const int POINTS, int iter, double** J, ELEMENT_2D_ARRAYS integrals,
 // matrix_dx, matrix_dy - temp matrices, iteration - punkt calkowania, element - integral dksi dn arrays
 void add_row(const int integration_points, double **matrix_dx, double **matrix_dy, int iteration, double **jacobi, ELEMENT_2D_ARRAYS element){
 
+    el_9_2d temp = el_9_2d();
     double row[4]; // final row
     // temp structures for f
     double row_temp_x[4] = {0, 0, 0, 0};
@@ -1762,16 +1949,30 @@ void add_row(const int integration_points, double **matrix_dx, double **matrix_d
     int counter = 0; // row iterator
     for(int i = 0; i < 4; i++){ // main loop - 4 integrals, inner loop - multiply dn/dX dn/dY by jacobi elements
         for(int j = 0; j < 2; j++){
-          //  std::cout<<"counter = "<<counter<<"j = "<<j<<" jacobi[0][j] = "<<jacobi[0][j]<<" element = "<<element.MATRIX_4P_DKSI[iteration][j]<<std::endl;
-            if(j == 0)
-                row_temp_x[counter] += jacobi[0][j]*element.MATRIX_4P_DKSI[iteration][i];
-            else if(j == 1)
-                row_temp_x[counter] += jacobi[0][j]*element.MATRIX_4P_DN[iteration][i];
-          //  std::cout<<"counter = "<<counter<<"j = "<<j<<" jacobi[1][j] = "<<jacobi[1][j]<<" element = "<<element.MATRIX_4P_DKSI[iteration][j]<<std::endl;
-            if(j == 0)
-                row_temp_y[counter] += jacobi[1][j]*element.MATRIX_4P_DKSI[iteration][i];
-            else if(j == 1)
-                row_temp_y[counter] += jacobi[1][j]*element.MATRIX_4P_DN[iteration][i];
+            // if(integration_points==2){
+            //    std::cout<<"counter = "<<counter<<" j = "<<j<<" jacobi[0][j] = "<<jacobi[0][j]<<" element = "<<element.MATRIX_4P_DKSI[iteration][j]<<std::endl;
+                if(j == 0)
+                    row_temp_x[counter] += jacobi[0][j]*element.MATRIX_4P_DKSI[iteration][i];
+                else if(j == 1)
+                    row_temp_x[counter] += jacobi[0][j]*element.MATRIX_4P_DN[iteration][i];
+            //    std::cout<<"counter = "<<counter<<" j = "<<j<<" jacobi[1][j] = "<<jacobi[1][j]<<" element = "<<element.MATRIX_4P_DKSI[iteration][j]<<std::endl;
+                if(j == 0)
+                    row_temp_y[counter] += jacobi[1][j]*element.MATRIX_4P_DKSI[iteration][i];
+                else if(j == 1)
+                    row_temp_y[counter] += jacobi[1][j]*element.MATRIX_4P_DN[iteration][i];
+            // }
+            // else if(integration_points==3){
+            //         //std::cout<<"counter = "<<counter<<" j = "<<j<<" jacobi[0][j] = "<<jacobi[0][j]<<" element = "<<element.MATRIX_4P_DKSI[iteration][j]<<std::endl;
+            //     if(j == 0)
+            //         row_temp_x[counter] += jacobi[0][j]*element.MATRIX_4P_DKSI[iteration][i]*temp.weights[iteration];
+            //     else if(j == 1)
+            //         row_temp_x[counter] += jacobi[0][j]*element.MATRIX_4P_DN[iteration][i]*temp.weights[iteration];
+            // //    std::cout<<"counter = "<<counter<<" j = "<<j<<" jacobi[1][j] = "<<jacobi[1][j]<<" element = "<<element.MATRIX_4P_DKSI[iteration][j]<<std::endl;
+            //     if(j == 0)
+            //         row_temp_y[counter] += jacobi[1][j]*element.MATRIX_4P_DKSI[iteration][i]*temp.weights[iteration];
+            //     else if(j == 1)
+            //         row_temp_y[counter] += jacobi[1][j]*element.MATRIX_4P_DN[iteration][i]*temp.weights[iteration];
+            // }
         }
        // std::cout<<"counter = "<<counter<<" x = "<<row_temp_x[counter]<<" y = "<<row_temp_y[counter]<<std::endl;
         ++counter;
@@ -1782,6 +1983,17 @@ void add_row(const int integration_points, double **matrix_dx, double **matrix_d
         matrix_dx[iteration][i] = row_temp_x[i];
         matrix_dy[iteration][i] = row_temp_y[i];
     }
+
+    // if(integration_points == 3){
+    //     for(int i = 0; i < 4; i++){
+    //     matrix_dx[iteration][i] *= row_temp_x[i];
+    //     matrix_dy[iteration][i] *= row_temp_y[i];
+    // }
+    // }
+
+    // std::cout<<"iteration: "<<iteration<<" row_x y:"<<std::endl;
+    // print_vector(matrix_dx[iteration], 4, 4);
+    // print_vector(matrix_dy[iteration], 4, 4);
     
 }
 
@@ -1793,7 +2005,7 @@ double** count_H_matrix(const int integration_points, int iteration, double **ja
 
     double **DX_matrix = new double*[integrals];
     double **DY_matrix = new double*[integrals]; // temp matrices inside integral
-    double ***H = new double**[4];
+    double ***H = new double**[integrals];
     for(int i = 0; i  < integrals; i++){
         H[i] = new double*[4];
         for(int j = 0; j < 4; j++)
@@ -1804,10 +2016,10 @@ double** count_H_matrix(const int integration_points, int iteration, double **ja
 
 
 
-    for(int i = 0; i < integrals; i++){
+    //for(int i = 0; i < integrals; i++){
         // std::cout<<"here"<<std::endl;
-        add_row(integration_points, DX_matrix, DY_matrix, i, jacobi, element);
-    }
+        add_row(integration_points, DX_matrix, DY_matrix, iteration, jacobi, element);
+    //}
     // transponowany rzad dla kazdego punktu calkowania
     double **X_mat = new double*[4];
     double **Y_mat = new double*[4];
@@ -1823,6 +2035,11 @@ double** count_H_matrix(const int integration_points, int iteration, double **ja
 
         X_mat = multi_matrix_transponed(4, DX_matrix[iteration]);
         Y_mat = multi_matrix_transponed(4, DY_matrix[iteration]);
+        if(integration_points == 3){
+            el_9_2d temp = el_9_2d();
+            const_multi_matrix(temp.weights[iteration], X_mat, 4);
+            const_multi_matrix(temp.weights[iteration], Y_mat, 4);
+        }
         H[iteration] = sum_matrix(X_mat, Y_mat, 4);
         const_multi_matrix(k, H[iteration], 4);
         const_multi_matrix(dV, H[iteration], 4);
@@ -1895,7 +2112,8 @@ void count_H_matrix_grid(const int integration_points, grid *GRID, ELEMENT_2D_AR
                         jacobian[k] = new double[2];
                     }
             jacobi(integration_points, j, jacobian, ELEMENT_1, temp_element);
-            H_sum = sum_matrix(count_H_matrix(integration_points, j, jacobian, ELEMENT_1,cond, if_print), H_sum, 4);
+            // const_multi_matrix(1/determinant(jacobian), jacobian, 2);
+            H_sum = sum_matrix(count_H_matrix(integration_points, j, jacobian, ELEMENT_1, cond, if_print), H_sum, 4);
             for(int k = 0; k < 2; k++)
                 delete jacobian[k];
             delete[] jacobian;
@@ -2135,7 +2353,7 @@ double* find_extremes(double *vector, int size){
  * 2 punkty calkowania
  * */
 
-void final_alghoritm_2POINTS(const int integration_points, InitData data, bool print_init, int precision = 6){
+void final_alghoritm(const int integration_points, InitData data, bool print_init, int precision = 6){
 
     // read input
     double simulation_time = data.SimulationTime;
@@ -2163,9 +2381,29 @@ void final_alghoritm_2POINTS(const int integration_points, InitData data, bool p
             matrix_n_4points[i] = new double[4];
         }
 
-        el_4_2d element = el_4_2d("H");
+        el_4_2d element = el_4_2d();
         element.count_matrix_4points_ksi(matrix_ksi_4points);
         element.count_matrix_4points_ksi(matrix_n_4points);
+
+
+        // SCHEMAT 3 PUNKTOWY beta
+        double **matrix_ksi_9points = new double*[9];
+        for(int i = 0; i < 9; i++){
+            matrix_ksi_9points[i] = new double[4];
+        }
+
+
+
+        double **matrix_n_9points = new double*[9];
+        for(int i = 0; i < 9; i++){
+            matrix_n_9points[i] = new double[4];
+        }
+
+        el_9_2d p3 = el_9_2d();
+        p3.count_matrix_9points_ksi(matrix_ksi_9points);
+        p3.count_matrix_9points_n(matrix_n_9points);
+        ELEMENT_2D_ARRAYS ELEMENT_3P = ELEMENT_2D_ARRAYS(matrix_ksi_9points, matrix_n_9points);
+
         ELEMENT_2D_ARRAYS ELEMENT_1 = ELEMENT_2D_ARRAYS(matrix_ksi_4points, matrix_n_4points);
         //     // MATRIX 4X4, dN/dksi
         // std::cout<<"==== RESULT FOR MATRIX[4][4]"<<", FUN = dN/dksi ===="<<std::endl;
@@ -2178,6 +2416,8 @@ void final_alghoritm_2POINTS(const int integration_points, InitData data, bool p
         // print_custom(matrix_n_4points, 4, 4, 4);
         count_H_matrix_grid(integration_points, &grid_1, ELEMENT_1, cond ,false);
 
+        // count_H_matrix_grid(3, &grid_1, ELEMENT_3P, cond ,false); //3punkty
+
         double **matrix_4points_HBC = new double*[8];
 
         for(int i = 0; i < 8; i++) matrix_4points_HBC[i] = new double[4];
@@ -2186,7 +2426,7 @@ void final_alghoritm_2POINTS(const int integration_points, InitData data, bool p
         el_4_2d_HBC element_HBC = el_4_2d_HBC();
         element_HBC.count_matrix_4points(matrix_4points_HBC);
 
-        count_HBC_grid(&grid_1, false, matrix_4points_HBC, alpha);
+        count_HBC_grid(integration_points, &grid_1, false, matrix_4points_HBC, alpha);
         if(print_init){
             std::cout<<"==== RESULT FOR HBC MATRIX - SHAPE FUNCTIONS===="<<std::endl;
             print_custom(matrix_4points_HBC, 8, 4, 4);
@@ -2218,10 +2458,7 @@ void final_alghoritm_2POINTS(const int integration_points, InitData data, bool p
             print_custom(matrix_4points_C, 4, 4, 4);
         }
 
-        double **matrix_test_C = new double*[4];
-        for(int i = 0; i < 4; i++) matrix_test_C[i] = new double[4];
-
-        count_C_matrix_grid(&grid_1, matrix_4points_C, specific_heat, density, ELEMENT_1, false);
+        count_C_matrix_grid(integration_points, &grid_1, matrix_4points_C, specific_heat, density, ELEMENT_1, false);
 
         double *T0 = new double[GSIZE];
         for(int i = 0; i < GSIZE; i++) T0[i] = init_temp;
@@ -2316,12 +2553,10 @@ void final_alghoritm_2POINTS(const int integration_points, InitData data, bool p
             // printResults(result_iteration, GSIZE, results, false);
             std::cout<<"MIN TEMPERATURE: "<<std::setprecision(6)<<find_extremes(results, GSIZE)[0]<< " MAX TEMPERATURE = "<<find_extremes(results, GSIZE)[1]<<std::endl;
 
-            std::cout<<"RES:"<<std::endl;
+            std::cout<<"TEMP VECTOR:"<<std::endl;
             print_vector(results, GSIZE, 6);
             for(int k = 0; k < GSIZE; k++)
                 T0[k] = results[k]; // overwrite temp. vector with new temperature in each step (iteration)
-            std::cout<<"T0 after:"<<std::endl;
-            print_vector(T0, GSIZE, 6);
             // delete[] results;
         }
 
