@@ -1,7 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include <algorithm>
-#include "HBC_matrix.cpp"
+#include "FEM_lib.cpp"
 #include "heapsort.cpp"
 
 // Convert string to and double
@@ -249,4 +249,5 @@ int read_file(const std::string file, InitData *data/*, grid *GRID*/){
         }
         data->grid_input = GRID;
     }
+    return 0;
 }

@@ -1942,7 +1942,6 @@ void final_alghoritm(const int integration_points, InitData data, bool print_ini
         data.print();
     }
 
-    std::cout<<"HERE";
     int integrals = integration_points*integration_points;
 
     // read input
@@ -2095,14 +2094,15 @@ void final_alghoritm(const int integration_points, InitData data, bool print_ini
         if(gaussMatrix(result_iteration, GSIZE, 0)){ // if matrix is solved correctly
             double *results = new double[GSIZE]; // results array
             calcSolution(result_iteration, GSIZE, results);
-            std::cout<<std::endl;
-            std::cout<<"----------------------------"<<std::endl;
-            std::cout<<"ITERATION "<<i<<" TIME = "<<(i+1)*time_step<<"s"<<std::endl;
-            std::cout<<"----------------------------"<<std::endl;
-            std::cout<<"MIN TEMPERATURE: "<<std::setprecision(6)<<find_extremes(results, GSIZE)[0]<< " MAX TEMPERATURE = "<<find_extremes(results, GSIZE)[1]<<std::endl;
+            // std::cout<<std::endl;
+            // std::cout<<"----------------------------"<<std::endl;
+            // std::cout<<"Iteracja: "<<i<<", czas: "<<(i+1)*time_step<<"s:  ";
+            std::cout<<(i+1)*time_step<<"  ";
+            // std::cout<<"----------------------------"<<std::endl;
+            std::cout<<std::setprecision(6)<<find_extremes(results, GSIZE)[0]<<"   "<<find_extremes(results, GSIZE)[1]<<std::endl;
 
-            std::cout<<"TEMP VECTOR:"<<std::endl;
-            print_vector(results, GSIZE, 6);
+            // std::cout<<"TEMP VECTOR:"<<std::endl;
+            // print_vector(results, GSIZE, 6);
             for(int k = 0; k < GSIZE; k++)
                 T0[k] = results[k]; // nadpisz wektor temperatur do nastepnej iteracji
             // delete[] results;
